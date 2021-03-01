@@ -6,14 +6,14 @@
   "scripts": {
     "build": "browserify --entry index.js --outfile bundle.js",
     "buildbabel": "browserify --entry index.js -o bundle.js -t [ babelify --presets [ @babel/preset-env] ]",
-    "buildw": "watchify index.js -o bundle.js -v",
+    "watch": "watchify index.js -o bundle.js -v",
     "buildwbabel": "watchify --entry index.js -o bundle.js -t [ babelify --presets [ @babel/preset-env] ] -v"
   },
   "repository": {
     "type": "git",
     "url": "js-api-test"
   },
-  "author": "gdznela",
+  "author": "mrxvancy",
   "license": "MIT",
   "dependencies": {
     "axios": "^0.18.0"

@@ -1,20 +1,68 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-"use strict";
+const axios = require('axios');
 
-var axios = require('axios'); //მაგალითები
+let postsTable = document.querySelector('#posts-table');
+let commentsTable = document.querySelector('#comments-table');
+let getPostsButton = document.querySelector('#get-posts');
 
+getPostsButton.addEventListener('click', () => {
+  getPosts();
+})
 
-fetch('https://jsonplaceholder.typicode.com/todos/1').then(function (response) {
-  return response.json();
-}).then(function (json) {
-  return console.log(json);
-});
-axios.get('https://jsonplaceholder.typicode.com/todos/1').then(function (response) {
-  console.log(response.data);
-}).catch(function (error) {
-  console.log(error);
-});
+function getPosts() {
+  let userId = document.getElementById('user-id').value;
+  fetch(`https://jsonplaceholder.typicode.com/posts?userId=${userId}`)
+    .then(response => response.json())
+    .then(json => displayPosts(json));
+}
 
+function displayPosts(posts) {
+  document.querySelectorAll('table').forEach(table => table.classList.remove('active'));
+  commentsTable.querySelector('tbody').innerHTML = '';
+  postsTable.querySelector('tbody').innerHTML = '';
+  posts.forEach(post => {
+    let tr = document.createElement('tr');
+    let rowSingle = `
+      <td>${post.title}</td>
+      <td>${post.body}</td>
+      <td>
+        <button id='${post.id}' class="get-comments">see comments</button>
+      </td>
+    `
+    tr.innerHTML = rowSingle;
+    postsTable.querySelector('tbody').appendChild(tr);
+  })
+  document.querySelectorAll('.get-comments').forEach(button => button.addEventListener('click', (e) => {
+    getComments(e.target);
+  }));
+  document.querySelector('#posts-table').classList.add('active');
+}
+
+function getComments(btn) {
+  let id = btn.getAttribute('id');
+  axios.get(`https://jsonplaceholder.typicode.com/comments?postId=${id}`)
+    .then((response) => {
+      displayComments(response.data);
+      document.querySelectorAll('#posts-table tr').forEach(tr => tr.classList.remove('active'));
+      btn.closest('tr').classList.add('active');
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+}
+
+function displayComments(comments) {
+  commentsTable.classList.add('active');
+  commentsTable.querySelector('tbody').innerHTML = '';
+  comments.forEach(comment => {
+    let tr = document.createElement('tr');
+    let rowSingle = `
+      <td>${comment.body}</td>
+    `
+    tr.innerHTML = rowSingle;
+    commentsTable.querySelector('tbody').appendChild(tr);
+  })
+}
 },{"axios":2}],2:[function(require,module,exports){
 module.exports = require('./lib/axios');
 },{"./lib/axios":4}],3:[function(require,module,exports){
